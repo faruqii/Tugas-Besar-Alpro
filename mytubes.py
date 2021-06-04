@@ -1,0 +1,248 @@
+import mysql.connector
+from prettytable import PrettyTable
+import random
+
+class Database:
+
+    def __init__(self):
+        self.db = mysql.connector.connect (
+            host = 'localhost',
+            user = 'root',
+            password = '',
+            database = 'rumah sakit'
+
+        )
+        if self.db.is_connected():
+            print("Succesfully connected to MySQL database")
+
+    def data_RawatInap(self,val):
+
+        cursor = self.db.cursor()
+        sql = "INSERT INTO rawatinap (dokter,spesialisasi,pasien,umur,penyakit,suhu,kamar) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        cursor.execute(sql, val)
+        self.db.commit()
+        print("{} Data telah di eksekusi !".format(cursor.rowcount))
+    
+    def data_RawatJalan(self,val):
+
+        cursor = self.db.cursor()
+        sql = "INSERT INTO rawatjalan (dokter,spesialisasi,pasien,umur,penyakit,suhu) VALUES (%s,%s,%s,%s,%s,%s)"
+        cursor.execute(sql, val)
+        self.db.commit()
+        print("{} Data telah di eksekusi !".format(cursor.rowcount))
+
+    def show_data_RawatInap(self):
+
+        cursor = self.db.cursor()
+        sql = "SELECT * FROM rawatinap"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        
+        table = PrettyTable()
+        
+        table.field_names = ['ID',  'DOKTER',  'SPESIALISASI',  'PASIEN',  'UMUR',  'PENYAKIT',  'SUHU',  'KAMAR']
+
+        for i in results:
+            table.add_row(list(i))
+        print(table)
+        
+    def show_data_RawatJalan(self):
+        cursor = self.db.cursor()
+        sql = "SELECT * FROM rawatjalan"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        
+        table = PrettyTable()
+        
+        table.field_names = ['ID',  'DOKTER',  'SPESIALISASI',  'PASIEN',  'UMUR',  'PENYAKIT',  'SUHU']
+
+        for i in results:
+            table.add_row(list(i))
+        print(table)
+
+class Menu: 
+
+    def __init__(self):
+        self.d1 = Database()
+
+        self.cursor = self.d1.db.cursor()
+
+    def rawatInap(self):
+        penyakit_dalam = ["Dr.Sutomo","Dr.Michael","Dr.Nurhadi"]
+        tht            = ["Dr.Suryadi","Dr.Rafner","Dr.Aladin"]
+        kandungan      = ["Dr.Rizal", "Dr.Hendri", "Dr.Asril"]
+        kecantikan     = ["Dr.Faiz","Dr.Ariani","Dr.Tirta"]        
+        pasien          = input("Masukkan Nama Pasien: ")
+        umur            = int(input("Masukkan Umur Pasien: "))
+        penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
+        spesialisasi    = input("Masukkan Poli yang dituju: ")
+        if spesialisasi == "Penyakit Dalam":
+            dokter = random.choice(penyakit_dalam)
+        elif spesialisasi == "THT":
+            dokter = random.choice(tht)
+        elif spesialisasi == "Kandungan":
+            dokter = random.choice(kandungan)
+        elif spesialisasi == "Kecantikan":
+            dokter = random.choice(kecantikan)
+        suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
+        if suhu > 36:
+            kamar = "Isolasi"
+            print("Anda dimasukkan ke kamar isolasi karena suhu anda melebihi batas! ")
+        else:
+            kamar       = input("Masukkan Kamar: ")
+        print(f"Pasien Akan Segera Masuk Kamar {kamar} dan akan ditangani Oleh {dokter}")
+        
+        val = (dokter,spesialisasi,pasien,umur,penyakit,suhu,kamar)
+        self.d1.data_RawatInap(val)
+
+    def receipt_rawatInap(self):
+        harga_VVIP = 2000000
+        harga_VIP = 1500000
+        harga_reguler = 1000000
+
+        pasien = input("Masukkan Nama Pasien: ")
+        self.cursor.execute("SELECT pasien,kamar FROM rawatinap WHERE pasien =%s LIMIT 1",(pasien,))
+        data = self.cursor.fetchone()
+        if data is None:
+            print("Data not found! ")
+        elif pasien in data:
+            if data[1] == "Reguler":
+                day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
+                total = harga_reguler * day
+                print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
+                print(f"Dengan Rincian\nHarga Kamar ={harga_reguler} x jumlah hari dirawat = {day}.")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "VIP":
+                day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
+                total = harga_VIP * day
+                print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
+                print(f"Dengan Rincian\nHarga Kamar ={harga_VIP} x jumlah hari dirawat = {day}.")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "VVIP":
+                day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
+                total = harga_VVIP * day
+                print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
+                print(f"Dengan Rincian\nHarga Kamar ={harga_VVIP} x jumlah hari dirawat = {day}.")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "Isolasi":
+                print("Biaya Pasien Suspect Covid-19 akan ditanggung oleh pemerintah")
+                
+    def rawatJalan(self,antrian):
+        penyakit_dalam = ["Dr.Sutomo","Dr.Michael","Dr.Nurhadi"]
+        tht            = ["Dr.Suryadi","Dr.Rafner","Dr.Aladin"]
+        kandungan      = ["Dr.Rizal", "Dr.Hendri", "Dr.Asril"]
+        kecantikan     = ["Dr.Faiz","Dr.Ariani","Dr.Tirta"] 
+        while True:
+            pasien          = input("Masukkan Nama Pasien: ")
+            umur            = int(input("Masukkan Umur Pasien: "))
+            penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
+            spesialisasi    = input("Masukkan Poli yang dituju: ")
+            if spesialisasi == "Penyakit Dalam":
+                dokter = random.choice(penyakit_dalam)
+            elif spesialisasi == "THT":
+                dokter = random.choice(tht)
+            elif spesialisasi == "Kandungan":
+                dokter = random.choice(kandungan)
+            elif spesialisasi == "Kecantikan":
+                dokter = random.choice(kecantikan)
+            suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
+             
+            print(f"No Antrian Pasien = {antrian}")
+            print(f"Silahkan Tunggu Dokter {dokter}")
+            
+            val = (dokter,spesialisasi,pasien,umur,penyakit,suhu)
+            self.d1.data_RawatJalan(val)
+            break
+
+    def receipt_rawatJalan(self):
+        P_Dalam     = 250000
+        tht         = 200000
+        Kandungan   = 150000 
+        Kecantikan  = 100000
+    
+        pasien = input("Masukkan Nama Pasien: ")
+        self.cursor.execute("SELECT pasien,spesialisasi FROM rawatjalan WHERE pasien =%s LIMIT 1",(pasien,))
+        data = self.cursor.fetchone()
+
+        if data is None:
+            print("Data not found!")
+
+        elif pasien in data:
+            if data[1] == "Penyakit Dalam":
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{P_Dalam} ")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "THT":
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{tht} ")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "Kandungan":
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Kandungan} ")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+            elif data[1] == "Kecantikan":
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Kecantikan} ")
+                print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+  
+    def mainMenu(self):
+        print("SELAMAT DATANG DI SISTEM INFORMASI RUMAH SAKIT")
+        while True:
+            print("""
+            1.Rawat Inap
+            2.Rawat Jalan
+            3.Exit
+            """)
+
+            menu = int(input("Masukkan Pilihan: "))
+            if menu == 1:
+                while True:
+                    print("""
+                    1.Daftar Rawat Inap
+                    2.Tagihan Rawat Inap
+                    3.Database Pasien Rawat Inap
+                    4.Kembali ke Menu Awal
+                    """)
+
+                    menu = int(input("Masukkkan Menu: "))
+
+                    if menu == 1:
+                        self.rawatInap()
+                    elif menu == 2:
+                        self.receipt_rawatInap()
+                    elif menu == 3:
+                        self.d1.show_data_RawatInap()
+                    elif menu == 4:
+                        print("Succesfully Exit !")
+                        break
+                    else:
+                        print("Wrong Menu !")
+
+            elif menu == 2:
+                antrian = 1
+                while True:
+                    print("""
+                    1.Daftar Rawat Jalan
+                    2.Tagihan Rawat Jalan
+                    3.Database Pasien Rawat Jalan
+                    4.Kembali ke Menu Awal
+                    """)
+
+                    menu = int(input("Masukkkan Menu: "))
+
+                    if menu == 1:
+                        self.rawatJalan(antrian)
+                        antrian += 1
+                    elif menu == 2:
+                        self.receipt_rawatJalan()
+                    elif menu == 3:
+                        self.d1.show_data_RawatJalan()
+                    elif menu == 4:
+                        print("Succesfully Exit !")
+                        break
+                    else:
+                        print("Wrong Menu !")
+
+            elif menu == 3:
+                print("Thank You! ")
+                break
+
+if __name__ == "__main__":
+    m1 = Menu()
+    m1.mainMenu()
