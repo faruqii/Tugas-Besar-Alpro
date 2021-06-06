@@ -1,6 +1,8 @@
+from re import T
 import mysql.connector
 from prettytable import PrettyTable
 import random
+import time
 
 class Database:
 
@@ -96,34 +98,40 @@ class Menu:
         self.d1.data_RawatInap(val)
 
     def receipt_rawatInap(self):
-        harga_VVIP = 2000000
-        harga_VIP = 1500000
-        harga_reguler = 1000000
+        Total_VVIP = 2000000
+        Total_VIP = 1500000
+        Total_reguler = 1000000
 
         pasien = input("Masukkan Nama Pasien: ")
         self.cursor.execute("SELECT pasien,kamar FROM rawatinap WHERE pasien =%s LIMIT 1",(pasien,))
         data = self.cursor.fetchone()
         if data is None:
-            print("Data not found! ")
+            print(f"Data pasien atas nama {pasien} tidak ditemukan!  ")
         elif pasien in data:
             if data[1] == "Reguler":
                 day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
-                total = harga_reguler * day
+                total = Total_reguler * day
                 print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
-                print(f"Dengan Rincian\nHarga Kamar ={harga_reguler} x jumlah hari dirawat = {day}.")
+                print(f"Dengan Rincian\nTotal Kamar ={Total_reguler} x jumlah hari dirawat = {day}.")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(total)
             elif data[1] == "VIP":
                 day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
-                total = harga_VIP * day
+                total = Total_VIP * day
                 print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
-                print(f"Dengan Rincian\nHarga Kamar ={harga_VIP} x jumlah hari dirawat = {day}.")
+                print(f"Dengan Rincian\nTotal Kamar ={Total_VIP} x jumlah hari dirawat = {day}.")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(total)
             elif data[1] == "VVIP":
                 day = int(input("Masukkan Berapa hari Pasien Dirawat: "))
-                total = harga_VVIP * day
+                total = Total_VVIP * day
                 print(f"Total Tagihan Kamar Pasien atas nama {data[0]} yang berada di kamar {data[1]} = Rp.{total}")
-                print(f"Dengan Rincian\nHarga Kamar ={harga_VVIP} x jumlah hari dirawat = {day}.")
+                print(f"Dengan Rincian\nTotal Kamar ={Total_VVIP} x jumlah hari dirawat = {day}.")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(total)
             elif data[1] == "Isolasi":
                 print("Biaya Pasien Suspect Covid-19 akan ditanggung oleh pemerintah")
                 
@@ -165,21 +173,49 @@ class Menu:
         data = self.cursor.fetchone()
 
         if data is None:
-            print("Data not found!")
-
+            print(f"Data pasien atas nama {pasien} tidak ditemukan!  ")
         elif pasien in data:
             if data[1] == "Penyakit Dalam":
-                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{P_Dalam} ")
+                Total = P_Dalam
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Total} ")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(Total)
             elif data[1] == "THT":
-                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{tht} ")
+                Total = tht
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Total} ")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(Total)
             elif data[1] == "Kandungan":
-                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Kandungan} ")
+                Total = Kandungan
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Total}")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(Total)
             elif data[1] == "Kecantikan":
-                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Kecantikan} ")
+                Total = Kecantikan
+                print(f"Tagihan Berobat pasien atas nama {data[0]} = Rp.{Total} ")
                 print("Silahkan Lanjutkan Pembayaran ke Apotik Untuk Pengambilan Obat")
+                print()
+                self.payment(Total)
+
+    def payment(self,Total):
+        print("Pilih Metode Pembayaran")
+        print("1.BPJS")
+        print("2.Klaim Asuransi")
+        payment = int(input("Masukkan Pilihan Payment: "))
+        if payment == 1:
+            code = input("Masukkan Nomor BPJS: ")
+            time.sleep(2)
+            print(f"BPJS dengan nomor {code} Berhasil Di claim")
+        elif payment == 2:
+            Asuransi = input("Masukkan Nama Asuransi: ")
+            code = int(input("Masukkan code:"))
+            time.sleep(2)
+            print(f"Klaim Asuransi {Asuransi} dengan nomor {code} Sukses!")
+
+
   
     def mainMenu(self):
         print("SELAMAT DATANG DI SISTEM INFORMASI RUMAH SAKIT")
