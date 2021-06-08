@@ -7,6 +7,7 @@ import time
 class Database:
 
     def __init__(self):
+        
         self.db = mysql.connector.connect (
             host = 'localhost',
             user = 'root',
@@ -66,36 +67,38 @@ class Menu:
 
     def __init__(self):
         self.d1 = Database()
-
         self.cursor = self.d1.db.cursor()
 
     def rawatInap(self):
-        penyakit_dalam = ["Dr.Sutomo","Dr.Michael","Dr.Nurhadi"]
-        tht            = ["Dr.Suryadi","Dr.Rafner","Dr.Aladin"]
-        kandungan      = ["Dr.Rizal", "Dr.Hendri", "Dr.Asril"]
-        kecantikan     = ["Dr.Faiz","Dr.Ariani","Dr.Tirta"]        
-        pasien          = input("Masukkan Nama Pasien: ")
-        umur            = int(input("Masukkan Umur Pasien: "))
-        penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
-        spesialisasi    = input("Masukkan Poli yang dituju: ")
-        if spesialisasi == "Penyakit Dalam":
-            dokter = random.choice(penyakit_dalam)
-        elif spesialisasi == "THT":
-            dokter = random.choice(tht)
-        elif spesialisasi == "Kandungan":
-            dokter = random.choice(kandungan)
-        elif spesialisasi == "Kecantikan":
-            dokter = random.choice(kecantikan)
-        suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
-        if suhu > 36:
-            kamar = "Isolasi"
-            print("Anda dimasukkan ke kamar isolasi karena suhu anda melebihi batas! ")
-        else:
-            kamar       = input("Masukkan Kamar: ")
-        print(f"Pasien Akan Segera Masuk Kamar {kamar} dan akan ditangani Oleh {dokter}")
-        
-        val = (dokter,spesialisasi,pasien,umur,penyakit,suhu,kamar)
-        self.d1.data_RawatInap(val)
+        try:
+            penyakit_dalam = ["Dr.Sutomo","Dr.Michael","Dr.Nurhadi"]
+            tht            = ["Dr.Suryadi","Dr.Rafner","Dr.Aladin"]
+            kandungan      = ["Dr.Rizal", "Dr.Hendri", "Dr.Asril"]
+            kecantikan     = ["Dr.Faiz","Dr.Ariani","Dr.Tirta"]        
+            pasien          = input("Masukkan Nama Pasien: ")
+            umur            = int(input("Masukkan Umur Pasien: "))
+            penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
+            spesialisasi    = input("Masukkan Poli yang dituju: ")
+            if spesialisasi == "Penyakit Dalam":
+                dokter = random.choice(penyakit_dalam)
+            elif spesialisasi == "THT":
+                dokter = random.choice(tht)
+            elif spesialisasi == "Kandungan":
+                dokter = random.choice(kandungan)
+            elif spesialisasi == "Kecantikan":
+                dokter = random.choice(kecantikan)
+            suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
+            if suhu > 36:
+                kamar = "Isolasi"
+                print("Anda dimasukkan ke kamar isolasi karena suhu anda melebihi batas! ")
+            else:
+                kamar       = input("Masukkan Kamar: ")
+            print(f"Pasien Akan Segera Masuk Kamar {kamar} dan akan ditangani Oleh {dokter}")
+            
+            val = (dokter,spesialisasi,pasien,umur,penyakit,suhu,kamar)
+            self.d1.data_RawatInap(val)
+        except ValueError:
+            print("Umur Pasien harus angka !")
 
     def receipt_rawatInap(self):
         Total_VVIP = 2000000
@@ -141,26 +144,29 @@ class Menu:
         kandungan      = ["Dr.Rizal", "Dr.Hendri", "Dr.Asril"]
         kecantikan     = ["Dr.Faiz","Dr.Ariani","Dr.Tirta"] 
         while True:
-            pasien          = input("Masukkan Nama Pasien: ")
-            umur            = int(input("Masukkan Umur Pasien: "))
-            penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
-            spesialisasi    = input("Masukkan Poli yang dituju: ")
-            if spesialisasi == "Penyakit Dalam":
-                dokter = random.choice(penyakit_dalam)
-            elif spesialisasi == "THT":
-                dokter = random.choice(tht)
-            elif spesialisasi == "Kandungan":
-                dokter = random.choice(kandungan)
-            elif spesialisasi == "Kecantikan":
-                dokter = random.choice(kecantikan)
-            suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
-             
-            print(f"No Antrian Pasien = {antrian}")
-            print(f"Silahkan Tunggu Dokter {dokter}")
-            
-            val = (dokter,spesialisasi,pasien,umur,penyakit,suhu)
-            self.d1.data_RawatJalan(val)
-            break
+            try:
+                pasien          = input("Masukkan Nama Pasien: ")
+                umur            = int(input("Masukkan Umur Pasien: "))
+                penyakit        = input("Masukkan Jenis Penyakit Pasien: ")
+                spesialisasi    = input("Masukkan Poli yang dituju: ")
+                if spesialisasi == "Penyakit Dalam":
+                    dokter = random.choice(penyakit_dalam)
+                elif spesialisasi == "THT":
+                    dokter = random.choice(tht)
+                elif spesialisasi == "Kandungan":
+                    dokter = random.choice(kandungan)
+                elif spesialisasi == "Kecantikan":
+                    dokter = random.choice(kecantikan)
+                suhu            = int(input("Masukkan Suhu Tubuh Pasien: "))
+                
+                print(f"No Antrian Pasien = {antrian}")
+                print(f"Silahkan Tunggu Dokter {dokter}")
+                
+                val = (dokter,spesialisasi,pasien,umur,penyakit,suhu)
+                self.d1.data_RawatJalan(val)
+                break
+            except ValueError:
+                print("Umur Pasien harus angka !")
 
     def receipt_rawatJalan(self):
         P_Dalam     = 250000
@@ -214,8 +220,6 @@ class Menu:
             code = int(input("Masukkan code:"))
             time.sleep(2)
             print(f"Klaim Asuransi {Asuransi} dengan nomor {code} Sukses!")
-
-
   
     def mainMenu(self):
         print("SELAMAT DATANG DI SISTEM INFORMASI RUMAH SAKIT")
