@@ -1,4 +1,3 @@
-from re import T
 import mysql.connector
 from prettytable import PrettyTable
 import random
@@ -7,7 +6,7 @@ import time
 class Database:
 
     def __init__(self):
-        
+
         self.db = mysql.connector.connect (
             host = 'localhost',
             user = 'root',
