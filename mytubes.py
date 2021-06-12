@@ -209,16 +209,19 @@ class Menu:
         print("Pilih Metode Pembayaran")
         print("1.BPJS")
         print("2.Klaim Asuransi")
-        payment = int(input("Masukkan Pilihan Payment: "))
-        if payment == 1:
-            code = input("Masukkan Nomor BPJS: ")
-            time.sleep(2)
-            print(f"BPJS dengan nomor {code} Berhasil Di claim")
-        elif payment == 2:
-            Asuransi = input("Masukkan Nama Asuransi: ")
-            code = int(input("Masukkan code:"))
-            time.sleep(2)
-            print(f"Klaim Asuransi {Asuransi} dengan nomor {code} Sukses!")
+        try:
+            payment = int(input("Masukkan Pilihan Payment: "))
+            if payment == 1:
+                code = input("Masukkan Nomor BPJS: ")
+                time.sleep(2)
+                print(f"BPJS dengan nomor {code} Berhasil Di claim")
+            elif payment == 2:
+                Asuransi = input("Masukkan Nama Asuransi: ")
+                code = int(input("Masukkan code:"))
+                time.sleep(2)
+                print(f"Klaim Asuransi {Asuransi} dengan nomor {code} Sukses!")
+        except ValueError:
+            print("Masukkan Pilihan dengan Angka! ")
   
     def mainMenu(self):
         print("SELAMAT DATANG DI SISTEM INFORMASI RUMAH SAKIT")
