@@ -1,66 +1,8 @@
 import mysql.connector
 from prettytable import PrettyTable
-import random
+from database.database import Database
 import time
-
-class Database:
-
-    def __init__(self):
-
-        self.db = mysql.connector.connect (
-            host = 'localhost',
-            user = 'root',
-            password = '',
-            database = 'rumah sakit'
-
-        )
-        if self.db.is_connected():
-            print("Succesfully connected to MySQL database")
-
-    def data_RawatInap(self,val):
-
-        cursor = self.db.cursor()
-        sql = "INSERT INTO rawatinap (dokter,spesialisasi,pasien,umur,penyakit,suhu,kamar) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-        cursor.execute(sql, val)
-        self.db.commit()
-        print("{} Data telah di eksekusi !".format(cursor.rowcount))
-    
-    def data_RawatJalan(self,val):
-
-        cursor = self.db.cursor()
-        sql = "INSERT INTO rawatjalan (dokter,spesialisasi,pasien,umur,penyakit,suhu) VALUES (%s,%s,%s,%s,%s,%s)"
-        cursor.execute(sql, val)
-        self.db.commit()
-        print("{} Data telah di eksekusi !".format(cursor.rowcount))
-
-    def show_data_RawatInap(self):
-
-        cursor = self.db.cursor()
-        sql = "SELECT * FROM rawatinap"
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        
-        table = PrettyTable()
-        
-        table.field_names = ['ID',  'DOKTER',  'SPESIALISASI',  'PASIEN',  'UMUR',  'PENYAKIT',  'SUHU',  'KAMAR']
-
-        for i in results:
-            table.add_row(list(i))
-        print(table)
-        
-    def show_data_RawatJalan(self):
-        cursor = self.db.cursor()
-        sql = "SELECT * FROM rawatjalan"
-        cursor.execute(sql)
-        results = cursor.fetchall()
-        
-        table = PrettyTable()
-        
-        table.field_names = ['ID',  'DOKTER',  'SPESIALISASI',  'PASIEN',  'UMUR',  'PENYAKIT',  'SUHU']
-
-        for i in results:
-            table.add_row(list(i))
-        print(table)
+import random
 
 class Menu: 
 
@@ -222,7 +164,7 @@ class Menu:
                 print(f"Klaim Asuransi {Asuransi} dengan nomor {code} Sukses!")
         except ValueError:
             print("Masukkan Pilihan dengan Angka! ")
-  
+
     def mainMenu(self):
         print("SELAMAT DATANG DI SISTEM INFORMASI RUMAH SAKIT")
         while True:
@@ -284,7 +226,3 @@ class Menu:
             elif menu == 3:
                 print("Thank You! ")
                 break
-
-if __name__ == "__main__":
-    m1 = Menu()
-    m1.mainMenu()
